@@ -549,8 +549,8 @@ function handleTap(){
     state='playing';score=0;coins=0;pipes=[];particles=[];envP=[];lastGapC=0;
     dino.reset();dino.flap();playSound('flap');spawnPipe();
   } else if(state==='playing'){
+    dino.flap();playSound('flap');
     if(dt<300){dino.fire();}
-    else{dino.flap();playSound('flap');}
   } else if(state==='dead'){
     if(frameCount-deathFrame>35)state='menu';
   }
