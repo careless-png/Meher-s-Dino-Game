@@ -274,14 +274,30 @@ const dino = {
 // --- Pipes / Crystals ---
 let pipes = [];
 const pipeWidth = 72;
-const pipeGap = () => Math.max(190, 230 - score * 0.8);
-const pipeSpeed = () => Math.min(2.8 + score * 0.04, 5);
+const pipeGap = () => Math.max(220, 270 - score * 0.5);
+const pipeSpeed = () => Math.min(2.5 + score * 0.03, 4.5);
+let lastGapCenter = 0;
 
 function spawnPipe() {
   const gap = pipeGap();
-  const minY = 100;
-  const maxY = H() - 140 - gap;
-  const gapY = minY + Math.random() * (maxY - minY);
+  const minY = 140;
+  const maxY = H() - 180 - gap;
+  let gapY;
+
+  if (lastGapCenter === 0) {
+    // First pipe: center it
+    gapY = (H() - gap) / 2 - 40;
+  } else {
+    // Limit how much the gap moves between pipes (max 140px shift)
+    const lastTop = lastGapCenter - gap / 2;
+    const lo = Math.max(minY, lastTop - 140);
+    const hi = Math.min(maxY, lastTop + 140);
+    gapY = lo + Math.random() * (hi - lo);
+  }
+
+  gapY = Math.max(minY, Math.min(maxY, gapY));
+  lastGapCenter = gapY + gap / 2;
+
   pipes.push({
     x: W() + 50,
     gapTop: gapY,
@@ -682,6 +698,7 @@ function handleTap() {
     score = 0;
     pipes = [];
     particles = [];
+    lastGapCenter = 0;
     dino.reset();
     dino.flap();
     playSound('flap');
@@ -726,7 +743,7 @@ function gameLoop() {
     dino.update();
 
     // Spawn pipes
-    const spawnInterval = Math.max(110, 155 - score * 1.2);
+    const spawnInterval = Math.max(130, 170 - score * 1);
     if (frameCount - lastPipeSpawn > spawnInterval) {
       spawnPipe();
       lastPipeSpawn = frameCount;
